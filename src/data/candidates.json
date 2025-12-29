@@ -1,0 +1,164 @@
+[
+  {
+    "id": 1,
+    "name": "Sarah Chen",
+    "role": "Full Stack Developer",
+    "photo": "https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "skills": ["React", "Node.js", "PostgreSQL", "Docker", "AWS"],
+    "experience": "5 years",
+    "availability": "Actively Looking",
+    "about": "Passionate full stack developer with expertise in building scalable web applications. Strong background in both frontend and backend technologies.",
+    "projects": [
+      {
+        "id": 1,
+        "name": "E-commerce Platform",
+        "description": "Built a full stack e-commerce platform with React, Node.js, and PostgreSQL",
+        "technologies": ["React", "Node.js", "PostgreSQL"]
+      },
+      {
+        "id": 2,
+        "name": "Real-time Chat Application",
+        "description": "Developed a real-time chat app using WebSockets and React",
+        "technologies": ["React", "Socket.io", "Node.js"]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Alex Rodriguez",
+    "role": "UI/UX Designer",
+    "photo": "https://images.pexels.com/photos/3778619/pexels-photo-3778619.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "skills": ["Figma", "Adobe XD", "Prototyping", "User Research", "Design Systems"],
+    "experience": "4 years",
+    "availability": "Actively Looking",
+    "about": "Creative UI/UX designer focused on creating delightful user experiences. Expertise in design systems and cross-platform design.",
+    "projects": [
+      {
+        "id": 1,
+        "name": "Mobile App Redesign",
+        "description": "Redesigned a mobile banking app improving user engagement by 40%",
+        "technologies": ["Figma", "Adobe XD"]
+      },
+      {
+        "id": 2,
+        "name": "Design System",
+        "description": "Created comprehensive design system with 100+ components",
+        "technologies": ["Figma", "Design Tokens"]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Priya Sharma",
+    "role": "Data Analyst",
+    "photo": "https://images.pexels.com/photos/3807516/pexels-photo-3807516.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "skills": ["Python", "SQL", "Tableau", "Power BI", "Statistics"],
+    "experience": "3 years",
+    "availability": "Actively Looking",
+    "about": "Data-driven analyst with proven track record in business intelligence and analytics. Expertise in turning data into actionable insights.",
+    "projects": [
+      {
+        "id": 1,
+        "name": "Sales Analytics Dashboard",
+        "description": "Built interactive sales dashboard using Tableau reducing reporting time by 60%",
+        "technologies": ["Tableau", "SQL"]
+      },
+      {
+        "id": 2,
+        "name": "Customer Segmentation",
+        "description": "Performed customer segmentation analysis using Python and statistical methods",
+        "technologies": ["Python", "Statistics"]
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Michael Johnson",
+    "role": "Full Stack Developer",
+    "photo": "https://images.pexels.com/photos/3791664/pexels-photo-3791664.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "skills": ["Vue.js", "Laravel", "MySQL", "Redis", "Kubernetes"],
+    "experience": "6 years",
+    "availability": "Open to Opportunities",
+    "about": "Experienced full stack developer specializing in PHP/Laravel and Vue.js. Strong DevOps knowledge with container technologies.",
+    "projects": [
+      {
+        "id": 1,
+        "name": "SaaS Platform",
+        "description": "Developed a multi-tenant SaaS platform serving 500+ customers",
+        "technologies": ["Laravel", "Vue.js", "MySQL"]
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Emma Wilson",
+    "role": "Product Manager",
+    "photo": "https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "skills": ["Product Strategy", "Agile", "Analytics", "User Research", "Roadmapping"],
+    "experience": "5 years",
+    "availability": "Actively Looking",
+    "about": "Strategic product manager with experience scaling products from 0 to 1M+ users. Passionate about building products that solve real problems.",
+    "projects": [
+      {
+        "id": 1,
+        "name": "Mobile App Launch",
+        "description": "Led product strategy for mobile app achieving 100K downloads in first month",
+        "technologies": ["Product Strategy", "Analytics"]
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "James Lee",
+    "role": "DevOps Engineer",
+    "photo": "https://images.pexels.com/photos/3778619/pexels-photo-3778619.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "skills": ["Kubernetes", "Docker", "AWS", "CI/CD", "Terraform"],
+    "experience": "7 years",
+    "availability": "Open to Opportunities",
+    "about": "Infrastructure enthusiast with deep expertise in cloud platforms and container orchestration. Passionate about automating deployments.",
+    "projects": [
+      {
+        "id": 1,
+        "name": "Cloud Migration",
+        "description": "Migrated on-premise infrastructure to AWS reducing costs by 45%",
+        "technologies": ["AWS", "Kubernetes", "Terraform"]
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Olivia Martinez",
+    "role": "UI/UX Designer",
+    "photo": "https://images.pexels.com/photos/3807516/pexels-photo-3807516.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "skills": ["Figma", "Prototyping", "Animation", "Web Design", "Accessibility"],
+    "experience": "3 years",
+    "availability": "Actively Looking",
+    "about": "Design-focused designer with passion for accessibility and inclusive design. Skilled in creating animated interactions.",
+    "projects": [
+      {
+        "id": 1,
+        "name": "Accessibility Audit",
+        "description": "Conducted accessibility audit and improved WCAG compliance to AAA level",
+        "technologies": ["Figma", "Accessibility"]
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "David Kim",
+    "role": "Backend Engineer",
+    "photo": "https://images.pexels.com/photos/3791664/pexels-photo-3791664.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "skills": ["Go", "Microservices", "gRPC", "PostgreSQL", "Redis"],
+    "experience": "6 years",
+    "availability": "Actively Looking",
+    "about": "Backend specialist with expertise in building high-performance distributed systems. Strong knowledge of microservices architecture.",
+    "projects": [
+      {
+        "id": 1,
+        "name": "Microservices Migration",
+        "description": "Architected microservices migration handling 10K requests/second",
+        "technologies": ["Go", "gRPC", "Kubernetes"]
+      }
+    ]
+  }
+]
