@@ -1,20 +1,93 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { MessageCircle, Calendar, ArrowLeft, Briefcase, Award } from 'lucide-react';
 import SkillBadge from '../components/SkillBadge';
-import candidates from '../data/candidates.json';
+import { useEffect, useState } from 'react';
+// import candidates from '../data/candidates.json';
+
+type Candidate = {
+  id: string;          // backend id
+  name: string;
+  role: string;
+  availability: string;
+  skills: string[];
+  location: string;
+  photo?: string;
+  experience: string;
+  about: string;
+  projects: { id: string; name: string; description: string; technologies: string[] }[];
+};
+
+type RouteParams = {
+  id: string;
+};
 
 const CandidateProfile = () => {
-  const { id } = useParams();
+  const { id } = useParams<RouteParams>();
   const navigate = useNavigate();
-  const candidate = candidates.find((c) => c.id === Number(id));
+  const [candidate, setCandidate] = useState<Candidate | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!candidate) {
+    useEffect(() => {
+    if (!id) return;
+
+    const controller = new AbortController();
+
+    const fetchCandidate = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const token = localStorage.getItem("candidateToken"); // adjust key if needed
+
+        const res = await fetch(
+          `https://job-portal-backend-a496.onrender.com/api/candidates/profile/${id}`,
+          {
+            signal: controller.signal,
+            headers: {
+              "Content-Type": "application/json",
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+          }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data?.message || `Request failed with status ${res.status}`);
+        }
+
+        setCandidate(data); // if API wraps as {candidate: {...}}, use setCandidate(data.candidate)
+      } catch (err: any) {
+        if (err.name === "AbortError") return;
+        setError(err.message || "Failed to load candidate");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCandidate();
+
+    return () => controller.abort();
+  }, [id]);
+
+
+    if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-lg text-gray-700">Loading candidate...</p>
+      </div>
+    );
+  }
+
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Candidate not found</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Error</h2>
+          <p className="text-gray-700 mb-4">{error}</p>
           <button
-            onClick={() => navigate('/candidates')}
+            onClick={() => navigate("/candidates")}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Back to Candidates
@@ -24,8 +97,27 @@ const CandidateProfile = () => {
     );
   }
 
+  if (!candidate) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Candidate not found</h2>
+          <button
+            onClick={() => navigate("/candidates")}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Back to Candidates
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+
   const availabilityColor =
-    candidate.availability === 'Actively Looking' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+    candidate.availability === "Actively Looking"
+      ? "bg-green-100 text-green-800"
+      : "bg-yellow-100 text-yellow-800";
 
   return (
     <div className="min-h-screen bg-gray-50">
