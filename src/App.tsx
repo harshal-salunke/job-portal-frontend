@@ -8,6 +8,7 @@ import CandidateProfile from './pages/CandidateProfile';
 import CreateCandidateProfile from './pages/CreateCandidateProfile';
 import CreateRecruiterProfile from './pages/CreateRecruiterProfile';
 import RecruiterDashboard from './pages/RecruiterDashboard';
+import { LoginCandidateProfile } from './pages/LoginCandidateProfile';
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -60,6 +61,14 @@ function App() {
           element={
             <Layout>
               <CreateCandidateProfile />
+            </Layout>
+          }
+        />
+        <Route
+          path="/login-candidate-profile"
+          element={
+            <Layout>
+              <LoginCandidateProfile />
             </Layout>
           }
         />

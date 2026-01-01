@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, X, ArrowLeft } from 'lucide-react';
+import { X, ArrowLeft } from 'lucide-react';
 
 const CreateCandidateProfile = () => {
   const navigate = useNavigate();
@@ -109,7 +109,8 @@ const CreateCandidateProfile = () => {
     const data = await res.json();
     localStorage.setItem('candidateProfile', JSON.stringify(data));
     alert('Profile created successfully! Redirecting...');
-    navigate('/candidates');
+    // navigate('/candidates');
+    navigate('/login-candidate-profile');
     } catch (error) {
       console.error('Error creating profile:', error);
       alert(`Error creating profile: ${(error as Error).message}`);

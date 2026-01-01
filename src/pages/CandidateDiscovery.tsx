@@ -1,35 +1,93 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, Filter } from 'lucide-react';
 import CandidateCard from '../components/CandidateCard';
-import candidates from '../data/candidates.json';
+
+type Candidate = {
+  id: number;
+  name: string;
+  role: string;
+  availability: string;
+  skills: string[];
+  location: string;
+  photo: string;
+  experience: string;
+  about: string;
+  projects: { name: string; description: string; technologies: string[] }[];
+}
 
 const CandidateDiscovery = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedAvailability, setSelectedAvailability] = useState('');
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const allSkills = Array.from(new Set(candidates.flatMap((c) => c.skills))).sort();
-  const allRoles = Array.from(new Set(candidates.map((c) => c.role))).sort();
+    const allSkills = useMemo(
+    () =>
+      Array.from(new Set(candidates.flatMap((c) => c.skills || []))).sort(),
+    [candidates]
+  );
 
-  const filteredCandidates = useMemo(() => {
-    return candidates.filter((candidate) => {
-      const matchesSearch =
-        searchQuery === '' ||
-        candidate.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        candidate.role.toLowerCase().includes(searchQuery.toLowerCase());
+  const allRoles = useMemo(
+    () => Array.from(new Set(candidates.map((c) => c.role))).sort(),
+    [candidates]
+  );
 
-      const matchesRole = selectedRole === '' || candidate.role === selectedRole;
+    useEffect(() => {
+    const controller = new AbortController();
 
-      const matchesAvailability =
-        selectedAvailability === '' || candidate.availability === selectedAvailability;
+    const fetchCandidates = async () => {
+      setLoading(true);
+      setError(null);
 
-      const matchesSkills =
-        selectedSkills.length === 0 || selectedSkills.every((skill) => candidate.skills.includes(skill));
+      try {
+        const params = new URLSearchParams();
 
-      return matchesSearch && matchesRole && matchesAvailability && matchesSkills;
-    });
+        if (selectedAvailability) params.set('Availability', selectedAvailability);
+        // if you add a location filter later, set it here:
+        // if (selectedLocation) params.set('location', selectedLocation);
+        if (selectedRole) params.set('role', selectedRole);
+        if (searchQuery) params.set('search', searchQuery);
+
+        if (selectedSkills.length > 0) {
+          params.set('skills', selectedSkills.join(',')); // adjust if backend needs another format
+        }
+
+        const url = `https://job-portal-backend-a496.onrender.com/api/candidates?${params.toString()}`;
+
+        const token = localStorage.getItem("candidateToken");
+
+        const res = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          }
+          });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => null);
+          throw new Error(errData?.message || `Request failed with status ${res.status}`);
+        }
+
+        const data = await res.json();
+        setCandidates(data.data); // assuming API returns an array
+        console.log('Fetched candidates:', data);
+      } catch (err: any) {
+        if (err.name === 'AbortError') return;
+        setError(err.message || 'Failed to load candidates');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCandidates();
+
+    return () => controller.abort();
   }, [searchQuery, selectedRole, selectedAvailability, selectedSkills]);
+
+
 
   const toggleSkill = (skill: string) => {
     setSelectedSkills((prev) =>
@@ -125,23 +183,30 @@ const CandidateDiscovery = () => {
             </div>
           </div>
 
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Found {filteredCandidates.length} candidate{filteredCandidates.length !== 1 ? 's' : ''}
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredCandidates.map((candidate) => (
-              <CandidateCard key={candidate.id} candidate={candidate} />
-            ))}
-          </div>
-
-          {filteredCandidates.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-xl text-gray-600">No candidates found matching your filters.</p>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {loading ? 'Loading candidates...' : `Found ${candidates.length} candidate${candidates.length !== 1 ? 's' : ''}`}
+              </h2>
             </div>
-          )}
+
+            {error && (
+              <div className="mb-4 text-red-600">
+                {error}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {candidates.map((candidate) => (
+                <CandidateCard key={candidate.id} candidate={candidate} />
+              ))}
+            </div>
+
+            {!loading && candidates.length === 0 && !error && (
+              <div className="text-center py-12">
+                <p className="text-xl text-gray-600">No candidates found matching your filters.</p>
+              </div>
+            )}
+
         </div>
       </div>
     </div>
