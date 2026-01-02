@@ -106,18 +106,13 @@ const CreateCandidateProfile = () => {
       const errorData = await res.json().catch(() => null);
       throw new Error(errorData?.message || `Failed to create profile: ${res.statusText}`);
     }
-    const data = await res.json();
-    localStorage.setItem('candidateProfile', JSON.stringify(data));
+
     alert('Profile created successfully! Redirecting...');
-    // navigate('/candidates');
     navigate('/login-candidate-profile');
     } catch (error) {
       console.error('Error creating profile:', error);
       alert(`Error creating profile: ${(error as Error).message}`);
     }
-    // localStorage.setItem('candidateProfile', JSON.stringify(formData));
-    // alert('Profile created successfully! Redirecting...');
-    // navigate('/candidates');
   };
 
   const isStep1Valid =

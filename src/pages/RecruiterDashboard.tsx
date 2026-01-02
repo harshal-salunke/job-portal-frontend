@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, MessageCircle, Heart, ChevronDown } from 'lucide-react';
+import { Search, Filter, MessageCircle, Heart } from 'lucide-react';
 import candidates from '../data/candidates.json';
 
 const RecruiterDashboard = () => {

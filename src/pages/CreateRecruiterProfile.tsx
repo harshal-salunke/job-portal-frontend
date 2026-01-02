@@ -2,19 +2,26 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
+
 const CreateRecruiterProfile = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    companyName: '',
-    email: '',
-    phone: '',
-    industry: '',
-    companySize: '',
-    location: '',
-    description: '',
-    website: '',
-    contactPerson: ''
+    companyName: "",
+    email: "",
+    phone: "",
+    industry: "",
+    companySize: "",
+    location: "",
+    description: "",
+    website: "",
+    contactPerson: "",
+    password: "",
+    availability: [] as string[],
+    search: [] as string[],
   });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -34,22 +41,91 @@ const CreateRecruiterProfile = () => {
     'Other'
   ];
 
-  const companySizes = ['1-50', '51-200', '201-500', '501-1000', '1000-5000', '5000+'];
+   const companySizes = ["1-50", "51-200", "201-500", "501-1000", "1000-5000", "5000+"];
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const availabilityOptions = ["Full-time", "Contract"];
+  const searchOptions = ["Python", "Java", "React", "Node.js"]; // extend as you need
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    localStorage.setItem('recruiterProfile', JSON.stringify(formData));
-    alert('Recruiter profile created successfully! Redirecting...');
-    navigate('/recruiter/dashboard');
+  const toggleAvailability = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      availability: prev.availability.includes(value)
+        ? prev.availability.filter((v) => v !== value)
+        : [...prev.availability, value],
+    }));
   };
 
-  const isStep1Valid = formData.companyName && formData.contactPerson && formData.email && formData.phone;
-  const isStep2Valid = formData.industry && formData.companySize && formData.location && formData.description;
+  const toggleSearch = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      search: prev.search.includes(value)
+        ? prev.search.filter((v) => v !== value)
+        : [...prev.search, value],
+    }));
+  };
+
+   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch(
+        "https://job-portal-backend-a496.onrender.com/api/auth/Recruiter/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            companyName: formData.companyName,
+            contactPerson: formData.contactPerson,
+            phone: formData.phone,
+            industry: formData.industry,
+            companySize: formData.companySize,
+            location: formData.location,
+            description: formData.description,
+            website: formData.website,
+            Availability: formData.availability,
+            Search: formData.search,
+          }),
+        }
+      ); // [web:73][web:75]
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to create recruiter account");
+      }
+
+      // if backend returns token, store it
+      if (data.token) {
+        localStorage.setItem("recruiterToken", data.token);
+      }
+
+      alert("Recruiter profile created successfully! Redirecting...");
+      // navigate("/recruiter/dashboard");
+      navigate("/login-recruiter-profile");
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isStep1Valid =
+    formData.companyName && formData.contactPerson && formData.email && formData.phone && formData.password;
+  const isStep2Valid =
+    formData.industry && formData.companySize && formData.location && formData.description;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 py-12">
@@ -73,7 +149,9 @@ const CreateRecruiterProfile = () => {
               <button
                 onClick={() => setCurrentStep(1)}
                 className={`flex-1 py-3 rounded-lg font-medium transition-all ${
-                  currentStep === 1 ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  currentStep === 1
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
                 Company Info
@@ -81,8 +159,10 @@ const CreateRecruiterProfile = () => {
               <button
                 onClick={() => isStep1Valid && setCurrentStep(2)}
                 className={`flex-1 py-3 rounded-lg font-medium transition-all ${
-                  currentStep === 2 ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                } ${!isStep1Valid ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  currentStep === 2
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                } ${!isStep1Valid ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 Details
               </button>
@@ -92,7 +172,9 @@ const CreateRecruiterProfile = () => {
               {currentStep === 1 && (
                 <div className="space-y-6 animate-fadeIn">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Company Name</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Company Name
+                    </label>
                     <input
                       type="text"
                       name="companyName"
@@ -105,7 +187,9 @@ const CreateRecruiterProfile = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Hiring Contact Person</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Hiring Contact Person
+                    </label>
                     <input
                       type="text"
                       name="contactPerson"
@@ -118,7 +202,9 @@ const CreateRecruiterProfile = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Email</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Email
+                    </label>
                     <input
                       type="email"
                       name="email"
@@ -131,7 +217,9 @@ const CreateRecruiterProfile = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Phone</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Phone
+                    </label>
                     <input
                       type="tel"
                       name="phone"
@@ -144,7 +232,24 @@ const CreateRecruiterProfile = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Website</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="Set a password"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Website
+                    </label>
                     <input
                       type="url"
                       name="website"
@@ -169,7 +274,9 @@ const CreateRecruiterProfile = () => {
               {currentStep === 2 && (
                 <div className="space-y-6 animate-fadeIn">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Industry</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Industry
+                    </label>
                     <select
                       name="industry"
                       value={formData.industry}
@@ -187,7 +294,9 @@ const CreateRecruiterProfile = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Company Size</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Company Size
+                    </label>
                     <select
                       name="companySize"
                       value={formData.companySize}
@@ -205,7 +314,9 @@ const CreateRecruiterProfile = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Location</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Location
+                    </label>
                     <input
                       type="text"
                       name="location"
@@ -218,7 +329,9 @@ const CreateRecruiterProfile = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Company Description</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Company Description
+                    </label>
                     <textarea
                       name="description"
                       value={formData.description}
@@ -228,6 +341,52 @@ const CreateRecruiterProfile = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all resize-none"
                       required
                     />
+                  </div>
+
+                  {/* Availability multiselect buttons */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Availability
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {availabilityOptions.map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => toggleAvailability(opt)}
+                          className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                            formData.availability.includes(opt)
+                              ? "bg-green-600 text-white"
+                              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Search (technologies you usually hire for) */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Search Preferences (Skills you hire for)
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {searchOptions.map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => toggleSearch(opt)}
+                          className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                            formData.search.includes(opt)
+                              ? "bg-green-600 text-white"
+                              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -240,6 +399,10 @@ const CreateRecruiterProfile = () => {
                     </ul>
                   </div>
 
+                  {error && (
+                    <p className="text-red-600 text-sm">{error}</p>
+                  )}
+
                   <div className="flex gap-4">
                     <button
                       type="button"
@@ -250,10 +413,10 @@ const CreateRecruiterProfile = () => {
                     </button>
                     <button
                       type="submit"
-                      disabled={!isStep2Valid}
+                      disabled={!isStep2Valid || loading}
                       className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Create Account
+                      {loading ? "Creating..." : "Create Account"}
                     </button>
                   </div>
                 </div>
@@ -267,3 +430,4 @@ const CreateRecruiterProfile = () => {
 };
 
 export default CreateRecruiterProfile;
+
